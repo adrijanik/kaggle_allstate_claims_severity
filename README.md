@@ -1,2 +1,2 @@
-# kaggle_allstate_claims_severity
+# Kaggle Allstate Claims Severity
 Kaggle challenge: Allstate claims severity in R
