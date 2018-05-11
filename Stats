@@ -1,0 +1,55 @@
+#read data and delete the ID column
+data = read.csv('C:/Upasana/Data Valorisation/train.csv')
+df = as.data.frame(data)
+df[1] = NULL
+
+#check if values missing
+if (sum(is.nan(as.matrix(df)))==0){
+    print('No Values Missing')
+}
+
+#mean,median,25th and 75th quartiles,min,max
+summary(df)
+
+#extract all continuous value columns
+dfCont = data.frame(row.names=1:nrow(df))
+for(i in 1:length(df)){
+    if (sapply(df[i], is.numeric) == TRUE){
+        #contCol = list.append(contCol,head(df[i],n=0))
+        dfCont = cbind(dfCont,df[i])
+        }
+    }
+
+#draw boxplots for them
+#delete loss column or else huge outliers there
+print(length(dfCont))
+dfCont[length(dfCont)] = NULL #dfCont$loss = NULL
+boxplot(dfCont, las=2, main="Continuous data boxplots", col=c("red","sienna","palevioletred1","royalblue2","red","sienna","palevioletred1","royalblue2","red","sienna","palevioletred1","royalblue2"))
+
+
+#correlation between continuous features including loss
+scaled.dfCont = scale(dfCont)     #normalize the data like this or by z-transformation
+#zVar <- (corrM - mean(corrM)) / sd(corrM)     #z-transformation
+corrM = cor(dfCont)
+library(corrplot)
+#corrplot(corrM, method="circle")
+#corrplot(corrM, method="number")
+
+#check if the loss column has normal distribution - yes it has
+x = dfCont['loss']
+x = seq(x[-1,])
+y = dnorm(x, mean = mean(x), sd = sd(x))
+plot(x,y)
+
+#apply lognormal to reduce the scale and control negative values
+y = dnorm(log(x), mean = mean(log(x)), sd = sd(log(x)))
+plot(log(x),y)
+
+#get the categorical values
+dfAlph = data.frame(row.names=1:nrow(df))
+for(i in 1:length(df)){
+    if (sapply(df[i], is.numeric) == FALSE){
+        #contCol = list.append(contCol,head(df[i],n=0))
+        dfAlph = cbind(dfAlph,df[i])
+        }
+    }
